@@ -1,6 +1,7 @@
 # Files that won't be included
 *.pdf
 notas-tp1.txt
+src/input
 
 # Directories that will be included
 linter/

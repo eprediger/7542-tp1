@@ -17,7 +17,7 @@ var_array_t* vars_init(const int dim) {
 	var_array_t* self = malloc(sizeof(var_array_t));
 	self->size = dim;
 	self->vars = malloc(dim * sizeof(*self->vars));
-	memset(self->vars, 0, dim * sizeof(int));
+	memset(self->vars, 0, dim * sizeof(*self->vars));
 
 	return self;
 }
@@ -39,7 +39,8 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value) {
 
 void vars_print_vars_with_format(var_array_t* self) {
 	for (int i = 0; i < self->size; ++i) {
-		printf("variables[%d] = %08x | ", i, vars_get_variable_by_index(self, i));
+		// printf("variables[%d] = %08x | ", i, vars_get_variable_by_index(self, i)); FOR TESTING
+		printf("%08x\n", vars_get_variable_by_index(self, i));
 	}
 	printf("\n");
 }

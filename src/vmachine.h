@@ -98,4 +98,8 @@ void vmachine_istore(vmachine_t* self, unsigned int index);
 // POST: 
 void vmachine_iload(vmachine_t* self, unsigned int index);
 
+void vmachine_print_stack(vmachine_t* self);
+
+void vmachine_print_vars(vmachine_t* self);
+
 #endif

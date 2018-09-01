@@ -5,7 +5,7 @@
 
 typedef struct {
 	FILE* file;
-	int* bytecode;
+	char* bytecode;
 } parser_t;
 
 // 

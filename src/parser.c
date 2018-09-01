@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #define COUNT 1
 
@@ -18,22 +19,23 @@ parser_t* parser_init(const char* filepath) {
 }
 
 void parser_destroy(parser_t* self) {
-	fclose(self->file);
+	if (self->file != stdin) {
+		fclose(self->file);
+	}
 	free(line);
 	free(self);
 }
 
 size_t parser_read_element(parser_t* self) {
 	// size_t elements = 
-	return fread((int*)self->bytecode, sizeof(*self->bytecode), COUNT, self);
+	return fread((int*)self->bytecode, sizeof(*self->bytecode), COUNT, self->file);
 }
 
 // with testing purposes only
 // compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 parser.c vmachine.c vars.c stack.c node.c -o parsertest
-
 // run with: ./parsertest <num-vars> <filename>
 
-int main(int argc, const char *argv[]) {
+/*int main(int argc, const char *argv[]) {
 	parser_t* parser;
 
 	switch (argc) {
@@ -50,8 +52,6 @@ int main(int argc, const char *argv[]) {
 			return 1;
 	}
 
-	size_t read_element = 
-
 	do {
 		parser_read(parser);
 
@@ -60,4 +60,4 @@ int main(int argc, const char *argv[]) {
 	parser_destroy(parser);
 
 	return 0;
-}
+}*/
