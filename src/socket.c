@@ -1,41 +1,79 @@
+#define _POSIX_C_SOURCE 200112L
+
 #include "socket.h"
+
+#include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-
-#define _POSIX_C_SOURCE 200112L
-
-socket_t* socket_create() {
+/*socket_t* socket_create() {
 	socket_t* self = malloc(sizeof(socket_t));
+	
 	self->socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (self->socket == -1) {
 		fprintf(stderr, "Error: %s\n", strerror(errno));
 	}
 
 	return self;
-}
+}*/
 
-socket_t* socket_init(const struct addrinfo* address) {
+socket_t* socket_init(const char *node, const char* service, int flags) {
 	socket_t* self = malloc(sizeof(socket_t));
-	self->address = address;
+	
+	int s = 0;
+	struct addrinfo hints;
+	struct addrinfo* result;
+	
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_INET;       // IPv4
+	hints.ai_socktype = SOCK_STREAM; // TCP
+	hints.ai_flags = flags;     // Server
 
-	int domain = address->ai_family;
-	int type = address->ai_socktype;
-	int protocol = address->ai_protocol;
-	self->socket = socket(domain, type, protocol);
-	if (self->socket == -1) {
-		fprintf(stderr, "Error: %s\n", strerror(errno));
-		return 1;
+	s = getaddrinfo(node, service, &hints, &result);
+	if (s != 0) {
+		fprintf(stderr, "Error en getaddrinfo: %s\n", gai_strerror(s));
+		free(self);
+		exit(EXIT_FAILURE);
 	}
+
+	self->address = result;
+
+	int dominio = result->ai_family;
+	int tipo = result->ai_socktype;
+	int protocolo = result->ai_protocol;
+	self->socket = socket(dominio, tipo, protocolo);
+
+
+	freeaddrinfo(result);
 
 	return self;
 }
+
+// int socket(int domain, int type, int protocol);
+// socket_t* socket_init(struct addrinfo* address) {
+
+// socket_t* socket_init(int domain, int type, int protocol) {
+// 	socket_t* self = malloc(sizeof(socket_t));
+// 	// self->address = address;
+
+// 	// int domain = address->ai_family;
+// 	// int type = address->ai_socktype;
+// 	// int protocol = address->ai_protocol;
+// 	self->socket = socket(domain, type, protocol);
+// 	if (self->socket == -1) {
+// 		fprintf(stderr, "Error: %s\n", strerror(errno));
+// 		exit(EXIT_FAILURE);
+// 	}
+
+// 	return self;
+// }
 
 void socket_destroy(socket_t* self) {
 	close(self->socket);
@@ -82,7 +120,7 @@ void socket_connect(socket_t* self) {
 	}
 }
 
-void socket_send(socket_t* self, char* buf, int size) {
+void socket_send(socket_t* self, const char* buf, const int size) {
 	int sent = 0;
 	int length_sent = 0;
 	bool valid_socket = true;

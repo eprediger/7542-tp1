@@ -101,6 +101,6 @@ void vmachine_iload(vmachine_t* self, unsigned int index);
 /* FOR TESTING ONLY */
 // void vmachine_print_stack(vmachine_t* self);
 
-void vmachine_print_vars(vmachine_t* self);
+char* vmachine_get_vars(vmachine_t* self);
 
 #endif

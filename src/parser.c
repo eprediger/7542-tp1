@@ -6,24 +6,6 @@
 
 #define COUNT 4
 
-// Virtual Machine Bytecodes
-#define IAND	0x7e
-#define IOR		0x80
-#define IXOR	0x82
-#define INEG	0x74
-
-#define IADD	0x60
-#define ISUB	0x64
-#define IMUL	0x68
-#define IDIV	0x6c
-#define IREM	0x70
-
-#define DUP		0x59
-#define BIPUSH	0x10
-
-#define ISTORE	0x36
-#define ILOAD	0x15
-
 parser_t* parser_init(const char* filepath) {
 	parser_t* self = malloc(sizeof(parser_t));
 	self->bytecode = malloc(sizeof(*self->bytecode) * COUNT);
@@ -42,7 +24,7 @@ void parser_destroy(parser_t* self) {
 	if (self->file != stdin) {
 		fclose(self->file);
 	}
-	free(line);
+	free(self->bytecode);
 	free(self);
 }
 

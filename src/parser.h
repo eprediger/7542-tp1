@@ -21,7 +21,7 @@ void parser_destroy(parser_t* self);
 // 
 // PRE:  
 // POST: 
-void parser_read(parser_t* self);
+size_t parser_read(parser_t* self);
 
 // 
 // PRE:  

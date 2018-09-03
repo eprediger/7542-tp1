@@ -24,6 +24,10 @@ void server_start(server_t* self);
 
 // PRE:  
 // POST: 
+void server_print_variables_dump(server_t* self);
+
+// PRE:  
+// POST: 
 void server_send_variables_dump(server_t* self);
 
 // PRE:  

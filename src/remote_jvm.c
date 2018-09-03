@@ -1,5 +1,5 @@
-// #include "client.h"
-// #include "server.h"
+#include "client.h"
+#include "server.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,8 +31,8 @@ int main(int argc, const char *argv[]) {
 				servidor = server_init(argv[2]);	// argv[2] = <port>
 				server_start(servidor);
 				server_send_variables_dump(servidor);
-				// server_stop(servidor);
-				// server_destroy(servidor);
+				server_stop(servidor);
+				server_destroy(servidor);
 			}
 		} else if (strncmp(argv[1], nombre_cli, strlen(argv[1])) == 0) {
 			if ((argc != CLIENT_MIN_ARGS) && (argc != CLIENT_MAX_ARGS)) {

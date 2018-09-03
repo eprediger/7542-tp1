@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
-var_array_t* vars_init(const int dim) {
+var_array_t* vars_init(const unsigned int dim) {
 	var_array_t* self = malloc(sizeof(var_array_t));
 	self->size = dim;
 	self->vars = malloc(dim * sizeof(*self->vars));
@@ -29,6 +29,10 @@ void vars_destroy(var_array_t* self) {
 	}
 }
 
+unsigned int vars_get_array_size(var_array_t* self) {
+	return self->size;
+}
+
 int vars_get_variable_by_index(var_array_t* self, int index) {
 	return self->vars[index];
 }
@@ -37,13 +41,13 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value) {
 	self->vars[index] = value;
 }
 
-void vars_print_vars_with_format(var_array_t* self) {
+/*void vars_print_vars_with_format(var_array_t* self) {
 	for (int i = 0; i < self->size; ++i) {
 		// printf("variables[%d] = %08x | ", i, vars_get_variable_by_index(self, i)); FOR TESTING
 		fprintf(stdout, "%08x\n", vars_get_variable_by_index(self, i));
 	}
 	fprintf(stdout, "\n");
-}
+}*/
 
 // with testing purposes only
 // compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vars.c -o testvars

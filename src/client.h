@@ -8,7 +8,7 @@
 typedef struct {
 	socket_t* client_socket;
 	parser_t* parser;
-	var_array_t* variables;
+	int num_variables;
 } client_t;
 
 // PRE:  
@@ -21,7 +21,11 @@ void client_destroy(client_t* self);
 
 // PRE:  
 // POST: 
-void client_connect(client_t* self);
+void client_connect(client_t* self, const char* host, const char* service);
+
+// PRE:  
+// POST: 
+void client_send_vars_size(client_t* self, const char* num_variables);
 
 // PRE:  
 // POST: 

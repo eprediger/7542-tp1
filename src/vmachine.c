@@ -3,23 +3,13 @@
 #include "stack.h"
 #include "vars.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 
-/*
-#define ISTORE	0x36
-#define ILOAD	0x15
-#define BIPUSH	0x10
-#define DUP		0x59
-#define IAND	0x7e
-#define IXOR	0x82
-#define IOR		0x80
-#define IREM	0x70
-#define INEG	0x74
-#define IDIV	0x6c
-#define IADD	0x60
-#define IMUL	0x68
-#define ISUB	0x64
-*/
+//	"Variables dump\n"
+#define VAR_DUMP_MSG_SIZE 15
+//	"00000000\n"
+#define VAR_PRINT_SIZE 9
 
 vmachine_t* vmachine_init(int variables) {
 	vmachine_t* self = malloc(sizeof(vmachine_t));
@@ -126,15 +116,29 @@ void vmachine_iload(vmachine_t* self, unsigned int index) {
 	fprintf(stdout, "%s\n", "iload");
 }
 
+char* vmachine_get_vars(vmachine_t* self) {
+	unsigned int len_variable_dump = VAR_DUMP_MSG_SIZE;
+	unsigned int array_size = vars_get_array_size(self->variables);
+	
+	len_variable_dump += (array_size * VAR_PRINT_SIZE);
+	char* variable_dump = malloc(sizeof(char) * (len_variable_dump + 1));	// '\0'
+
+	unsigned int current_pos = 0;
+	current_pos = snprintf(variable_dump, VAR_DUMP_MSG_SIZE, "%s", "Variables dump\n");
+
+	for (unsigned i = 0; i < array_size; ++i) {
+		int var_val = vars_get_variable_by_index(self->variables, i);
+		char* s = &variable_dump[current_pos];
+		current_pos += snprintf(s, VAR_PRINT_SIZE, "%08x\n", var_val);
+	}
+
+	return variable_dump;
+}
+
 /* FOR TESTING ONLY */
 // void vmachine_print_stack(vmachine_t* self) {
 // 	stack_print(self->stack);
 // }
-
-void vmachine_print_vars(vmachine_t* self) {
-	fprintf(stdout, "%s\n", "Variables dump");
-	vars_print_vars_with_format(self->variables);
-}
 
 // with testing purposes only
 // compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vmachine.c vars.c stack.c node.c -o testvmachine
