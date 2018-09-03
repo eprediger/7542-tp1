@@ -40,21 +40,22 @@ int stack_get_top(stack_t* self) {
 	return node_get_value(self->top);
 }
 
-void stack_print(stack_t* self) {
-	printf("%s", "Stack: ");
-	if (self != NULL) {
-		node_t* temp = self->top;
-		while (temp != NULL) {
-			printf("%x | ", node_get_value(temp));
-			temp = node_get_next(temp);
-		}
-	}
-	printf("\n");
-}
+/* FOR TESTING ONLY */
+// void stack_print(stack_t* self) {
+// 	printf("%s", "Stack: ");
+// 	if (self != NULL) {
+// 		node_t* temp = self->top;
+// 		while (temp != NULL) {
+// 			printf("%x | ", node_get_value(temp));
+// 			temp = node_get_next(temp);
+// 		}
+// 	}
+// 	printf("\n");
+// }
 
 // with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 stack.c node.c -o stacktest
-// run with: ./stacktest [<num>]...
+// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 stack.c node.c -o teststack
+// run with: ./teststack [<num>]...
 
 /*int main(int argc, const char *argv[]) {
 	if (argc < 2) {

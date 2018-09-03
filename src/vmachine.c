@@ -40,7 +40,7 @@ void vmachine_iand(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a & b;
 	stack_push(self->stack, result);
-	printf("%s\n", "iand");
+	fprintf(stdout, "%s\n", "iand");
 }
 
 void vmachine_ior(vmachine_t* self) {
@@ -48,7 +48,7 @@ void vmachine_ior(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a | b;
 	stack_push(self->stack, result);
-	printf("%s\n", "ior");
+	fprintf(stdout, "%s\n", "ior");
 }
 
 void vmachine_ixor(vmachine_t* self) {
@@ -56,14 +56,14 @@ void vmachine_ixor(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a ^ b;
 	stack_push(self->stack, result);
-	printf("%s\n", "ixor");
+	fprintf(stdout, "%s\n", "ixor");
 }
 
 void vmachine_ineg(vmachine_t* self) {
 	int a = stack_pop(self->stack);
 	int result = ~a;
 	stack_push(self->stack, result);
-	printf("%s\n", "ineg");
+	fprintf(stdout, "%s\n", "ineg");
 }
 
 void vmachine_iadd(vmachine_t* self) {
@@ -71,7 +71,7 @@ void vmachine_iadd(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a + b;
 	stack_push(self->stack, result);
-	printf("%s\n", "iadd");
+	fprintf(stdout, "%s\n", "iadd");
 }
 
 void vmachine_isub(vmachine_t* self) {
@@ -79,7 +79,7 @@ void vmachine_isub(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a - b;
 	stack_push(self->stack, result);
-	printf("%s\n", "isub");
+	fprintf(stdout, "%s\n", "isub");
 }
 
 void vmachine_imul(vmachine_t* self) {
@@ -87,7 +87,7 @@ void vmachine_imul(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a * b;
 	stack_push(self->stack, result);
-	printf("%s\n", "imul");
+	fprintf(stdout, "%s\n", "imul");
 }
 
 void vmachine_idiv(vmachine_t* self) {
@@ -95,7 +95,7 @@ void vmachine_idiv(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a / b;
 	stack_push(self->stack, result);
-	printf("%s\n", "idiv");
+	fprintf(stdout, "%s\n", "idiv");
 }
 
 void vmachine_irem(vmachine_t* self) {
@@ -103,41 +103,42 @@ void vmachine_irem(vmachine_t* self) {
 	int b = stack_pop(self->stack);
 	int result = a % b;
 	stack_push(self->stack, result);
-	printf("%s\n", "irem");
+	fprintf(stdout, "%s\n", "irem");
 }
 
 void vmachine_dup(vmachine_t* self) {
 	stack_push(self->stack, stack_get_top(self->stack));
-	printf("%s\n", "dup");
+	fprintf(stdout, "%s\n", "dup");
 }
 
 void vmachine_bipush(vmachine_t* self, int val) {
 	stack_push(self->stack, val);
-	printf("%s\n", "bipush");
+	fprintf(stdout, "%s\n", "bipush");
 }
 
 void vmachine_istore(vmachine_t* self, unsigned int index) {
 	vars_set_variable_by_index(self->variables, index, stack_pop(self->stack));
-	printf("%s\n", "istore");
+	fprintf(stdout, "%s\n", "istore");
 }
 
 void vmachine_iload(vmachine_t* self, unsigned int index) {
 	stack_push(self->stack, vars_get_variable_by_index(self->variables, index));
-	printf("%s\n", "iload");
+	fprintf(stdout, "%s\n", "iload");
 }
 
-void vmachine_print_stack(vmachine_t* self) {
-	stack_print(self->stack);
-}
+/* FOR TESTING ONLY */
+// void vmachine_print_stack(vmachine_t* self) {
+// 	stack_print(self->stack);
+// }
 
 void vmachine_print_vars(vmachine_t* self) {
-	printf("%s\n", "Variables dump");
+	fprintf(stdout, "%s\n", "Variables dump");
 	vars_print_vars_with_format(self->variables);
 }
 
 // with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vmachine.c vars.c stack.c node.c -o vmachinetest
-// run with: ./vmachinetest <num-vars>
+// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vmachine.c vars.c stack.c node.c -o testvmachine
+// run with: ./testvmachine <num-vars>
 
 /*int main(int argc, const char *argv[]) {
 	if (argc < 2) {

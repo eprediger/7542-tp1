@@ -1,2 +1,5 @@
-# 7542-tp1
-## Minimal Remote Java Virtual Machine
+# 7542 - Taller de Programación
+
+### 2do Cuatrimestre 2018
+
+## TP1: Minimal Remote Java Virtual Machine

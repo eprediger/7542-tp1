@@ -12,7 +12,7 @@ typedef struct {
 // Inicializa la máquina virtual en un estado válido
 // PRE:  -
 // POST: vmachine_t* apunta a un sector válido
-vmachine_t* vmachine_init();
+vmachine_t* vmachine_init(int variables);
 
 // Libera los recursos asociados a la máquina virtual
 // PRE:  self inicializado mediante vmachine_init
@@ -98,7 +98,8 @@ void vmachine_istore(vmachine_t* self, unsigned int index);
 // POST: 
 void vmachine_iload(vmachine_t* self, unsigned int index);
 
-void vmachine_print_stack(vmachine_t* self);
+/* FOR TESTING ONLY */
+// void vmachine_print_stack(vmachine_t* self);
 
 void vmachine_print_vars(vmachine_t* self);
 

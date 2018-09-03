@@ -1,13 +1,18 @@
 # Files that won't be included
 *.pdf
 notas-tp1.txt
-src/input
+input
+tp1
 
-# Directories that will be included
+# Directories that won't be included
+test/
+
+# Directories that could be included
 linter/
 valgrind/
+test/
 
-# Files that will be included
+# Files that could be included
 Makefile
 
 # Prerequisites

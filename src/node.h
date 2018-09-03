@@ -20,7 +20,7 @@ node_t* node_init(int value);
 // POST: self no apunta a un sector válido
 void node_destroy(node_t* self);
 
-// Devuelve el contenido de self
+// Devuelve el valor guardado en self
 // PRE:  self iniciado mediante node_init
 // POST: -
 int node_get_value(node_t* self);

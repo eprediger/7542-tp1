@@ -30,8 +30,8 @@ void node_set_next(node_t* self, node_t* next_node) {
 }
 
 // with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 node.c -o nodotest
-// run with: ./nodotest <num1> <num2>
+// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 node.c -o testnodo
+// run with: ./testnodo <num1> <num2>
 
 /*int main(int argc, const char *argv[]) {
 	if (argc < 2) {

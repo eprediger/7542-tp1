@@ -21,6 +21,21 @@ void parser_destroy(parser_t* self);
 // 
 // PRE:  
 // POST: 
-void parser_read();
+void parser_read(parser_t* self);
+
+// 
+// PRE:  
+// POST: 
+char* parser_get_bytecode(parser_t* self);
+
+// 
+// PRE:  
+// POST: 
+size_t parser_length(parser_t* self);
+
+// 
+// PRE:  
+// POST: 
+int parser_eof(parser_t* self);
 
 #endif

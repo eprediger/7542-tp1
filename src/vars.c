@@ -40,14 +40,14 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value) {
 void vars_print_vars_with_format(var_array_t* self) {
 	for (int i = 0; i < self->size; ++i) {
 		// printf("variables[%d] = %08x | ", i, vars_get_variable_by_index(self, i)); FOR TESTING
-		printf("%08x\n", vars_get_variable_by_index(self, i));
+		fprintf(stdout, "%08x\n", vars_get_variable_by_index(self, i));
 	}
-	printf("\n");
+	fprintf(stdout, "\n");
 }
 
 // with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vars.c -o varstest
-// run with: ./varstest <size>
+// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 vars.c -o testvars
+// run with: ./testvars <size>
 
 /*int main(int argc,  const char *argv[]) {
 	if (argc < 2) {
