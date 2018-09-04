@@ -45,12 +45,13 @@ void client_send_vars_size(client_t* self, const char* num_variables) {
 }
 
 void client_send_bytecodes(client_t* self) {
-	while (!parser_eof(self->parser)) {
-		parser_read(self->parser);
+	do {
+	 	parser_read(self->parser);
 		char* instruction = parser_get_bytecode(self->parser);
 		size_t length_instruction = parser_length(self->parser);
 		socket_send(self->client_socket, instruction, length_instruction);
-	}
+	 } while (!parser_eof(self->parser));
+	socket_send(self->client_socket, "\0", strlen("\0"));
 	socket_close_write_channel(self->client_socket);
 }
 

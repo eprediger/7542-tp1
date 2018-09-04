@@ -114,7 +114,7 @@ void server_start(server_t* self) {
 				break;
 		}
 
-		running = ((int)(message[0]) != EOF);
+		running = (message[0] != '\0');
 	}
 }
 

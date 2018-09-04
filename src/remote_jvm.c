@@ -7,8 +7,8 @@
 
 #define MIN_ARGS 2
 #define SERVER_ARGS 3
-#define CLIENT_MIN_ARGS 4
-#define CLIENT_MAX_ARGS 5
+#define CLIENT_MIN_ARGS 5
+#define CLIENT_MAX_ARGS 6
 
 // with testing purposes only
 // compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 tp1.c -o testtp
@@ -18,27 +18,24 @@ int main(int argc, const char *argv[]) {
 	server_t* servidor;
 	client_t* cliente;
 
-	if (argc >= MIN_ARGS) {
+	if (argc > MIN_ARGS) {
 		const char* nombre_serv = "server";
 		const char* nombre_cli  = "client";
 
 		if (strncmp(argv[1], nombre_serv, strlen(argv[1])) == 0) {
-			if (argc != SERVER_ARGS) {
-				fprintf(stderr, "Usage: %s %s <port>\n", argv[0], argv[1]);
-				exit(EXIT_FAILURE);
-			} else {
+			if (argc == SERVER_ARGS) {
 				// Aca empieza el server
 				servidor = server_init(argv[2]);	// argv[2] = <port>
 				server_start(servidor);
 				server_send_variables_dump(servidor);
 				server_stop(servidor);
 				server_destroy(servidor);
+			} else {
+				fprintf(stderr, "Usage: %s %s <port>\n", argv[0], argv[1]);
+				exit(EXIT_FAILURE);
 			}
 		} else if (strncmp(argv[1], nombre_cli, strlen(argv[1])) == 0) {
-			if ((argc != CLIENT_MIN_ARGS) && (argc != CLIENT_MAX_ARGS)) {
-				fprintf(stderr, "Usage: %s %s <host> <port> <num-vars> [<filename>]\n", argv[0], argv[1]);
-				exit(EXIT_FAILURE);
-			} else {
+			if ((argc == CLIENT_MIN_ARGS) || (argc == CLIENT_MAX_ARGS)) {
 				// Aca empieza el client
 				const int num_variables = atoi(argv[4]);
 				if (argc == CLIENT_MIN_ARGS) {
@@ -52,11 +49,14 @@ int main(int argc, const char *argv[]) {
 				client_receive_variable_dump(cliente);
 				client_disconnect(cliente);
 				client_destroy(cliente);
+			} else {
+				fprintf(stderr, "Usage: %s %s <host> <port> <num-vars> [<filename>]\n", argv[0], argv[1]);
+				exit(EXIT_FAILURE);
 			}
 		}
 	} else {
 		fprintf(stderr, "%s: Error de invocación\n", argv[0]);
-		fprintf(stderr, "Modo cliente:\t%s client <host> <port> [<filename>]\n", argv[0]);
+		fprintf(stderr, "Modo cliente:\t%s client <host> <port> <num-vars> [<filename>]\n", argv[0]);
 		fprintf(stderr, "Modo servidor:\t%s server <port>\n", argv[0]);
 	}
 
