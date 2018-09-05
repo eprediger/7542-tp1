@@ -2,15 +2,10 @@
 #define __SOCKET_H__
 
 typedef struct {
-	struct addrinfo* address;
-	int socket;
+	struct addrinfo* _address;	// privado
+	int _socket;	// privado
 } socket_t;
 
-// socket_t* socket_create();
-
-// socket_t* socket_init(struct addrinfo* address);
-
-// socket_t* socket_init(int domain, int type, int protocol);
 socket_t* socket_init(const char *node, const char* service, int flags);
 
 void socket_destroy(socket_t* self);

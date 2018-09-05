@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 typedef struct node {
-	int value;
-	struct node* next;
+	int _value;	// privado
+	struct node* _next;	// privado
 } node_t;
 
 // Devuelve una instancia de node_t
@@ -13,7 +13,7 @@ typedef struct node {
 // PRE:  -
 // POST: node_t apunta a un sector 
 // válido de memoria.
-node_t* node_init(int value);
+void node_init(node_t* self, int value);
 
 // Libera recursos asociados a self
 // PRE:  self iniciado mediante node_init

@@ -12,8 +12,6 @@
 #include <unistd.h>
 #include <netdb.h>
 
-#define MESSAGE_SIZE 4
-
 //	"Variables dump\n"
 #define VAR_DUMP_MSG_SIZE 15
 //	"00000000\n"
@@ -22,15 +20,18 @@
 client_t* client_init(const char* file, const int size) {
 	client_t* self = malloc(sizeof(client_t));
 	//self->client_socket = socket_init();
-	self->parser = parser_init(file);
+	parser_init(&(self->parser), file);
 	self->num_variables = size;
+	buffer_init(&self->buffer);
 	return self;
 }
 
 void client_destroy(client_t* self) {
-	parser_destroy(self->parser);
-	socket_destroy(self->client_socket);
-	free(self);
+	if (self != NULL) {
+		parser_destroy(self->parser);
+		socket_destroy(self->client_socket);
+		free(self);
+	}
 }
 
 void client_connect(client_t* self, const char* host, const char* service) {
@@ -46,11 +47,12 @@ void client_send_vars_size(client_t* self, const char* num_variables) {
 
 void client_send_bytecodes(client_t* self) {
 	do {
-	 	parser_read(self->parser);
-		char* instruction = parser_get_bytecode(self->parser);
-		size_t length_instruction = parser_length(self->parser);
+		parser_read(self->parser);
+		// char* instruction = parser_get_bytecode(self->parser);
+		// size_t length_instruction = parser_length(self->parser);
 		socket_send(self->client_socket, instruction, length_instruction);
-	 } while (!parser_eof(self->parser));
+	} while (!parser_eof(self->parser));
+
 	socket_send(self->client_socket, "\0", strlen("\0"));
 	socket_close_write_channel(self->client_socket);
 }

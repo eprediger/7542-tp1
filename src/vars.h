@@ -2,8 +2,8 @@
 #define __VARS_H__
 
 typedef struct var_array {
-	int* vars;
-	unsigned int size;
+	int* _vars;	// privado
+	unsigned int _size;	// privado
 } var_array_t;
 
 // Devuelve una instancia de var_array_t
@@ -11,7 +11,7 @@ typedef struct var_array {
 // PRE:  -
 // POST: var_array_t apunta a un sector 
 // válido de memoria.
-var_array_t* vars_init(const unsigned int dim);
+void vars_init(var_array_t* self, const unsigned int dim);
 
 // Libera recursos asociados a self
 // PRE:  self iniciado mediante vars_init
@@ -39,6 +39,6 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value);
 // array en notación hexadecimal de 8 dígitos
 // PRE:  self iniciado mediante vars_init
 // POST: -
-// void vars_print_vars_with_format(var_array_t* self);
+void vars_print_vars_with_format(var_array_t* self);
 
 #endif

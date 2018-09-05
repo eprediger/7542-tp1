@@ -5,14 +5,14 @@
 #include "vars.h"
 
 typedef struct {
-	stack_t* stack;
-	var_array_t* variables;
+	stack_t _stack;	// privado
+	var_array_t _variables;	// privado
 } vmachine_t;
 
 // Inicializa la máquina virtual en un estado válido
 // PRE:  -
 // POST: vmachine_t* apunta a un sector válido
-vmachine_t* vmachine_init(int variables);
+void vmachine_init(vmachine_t* self, int variables);
 
 // Libera los recursos asociados a la máquina virtual
 // PRE:  self inicializado mediante vmachine_init
@@ -98,9 +98,12 @@ void vmachine_istore(vmachine_t* self, unsigned int index);
 // POST: 
 void vmachine_iload(vmachine_t* self, unsigned int index);
 
-/* FOR TESTING ONLY */
-// void vmachine_print_stack(vmachine_t* self);
-
 char* vmachine_get_vars(vmachine_t* self);
+
+/* FOR TESTING ONLY */
+void vmachine_print_stack(vmachine_t* self);
+
+void vmachine_print_vars(vmachine_t* self);
+
 
 #endif

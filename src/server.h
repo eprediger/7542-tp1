@@ -8,6 +8,7 @@ typedef struct {
 	socket_t* local_socket;
 	socket_t* remote_socket;
 	vmachine_t* virtual_machine;
+	buffer_t buffer;
 } server_t;
 
 // PRE:  

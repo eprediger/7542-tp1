@@ -7,8 +7,9 @@
 
 typedef struct {
 	socket_t* client_socket;
-	parser_t* parser;
+	parser_t parser;
 	int num_variables;
+	buffer_t buffer;
 } client_t;
 
 // PRE:  

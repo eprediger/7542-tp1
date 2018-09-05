@@ -15,8 +15,8 @@
 // run with: ./testtp <user> <host> <port> [<filename>]
 
 int main(int argc, const char *argv[]) {
-	server_t* servidor;
-	client_t* cliente;
+	server_t* servidor = NULL;
+	client_t* cliente = NULL;
 
 	if (argc > MIN_ARGS) {
 		const char* nombre_serv = "server";

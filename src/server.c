@@ -35,39 +35,48 @@
 server_t* server_init(const char* service) {
 	server_t* self = malloc(sizeof(server_t));
 	
-	self->remote_socket = malloc(sizeof(socket_t));
-
 	self->local_socket = socket_init(NULL, service, AI_PASSIVE);
+
+	self->remote_socket = malloc(sizeof(socket_t));
 
 	return self;
 }
 
 void server_destroy(server_t* self) {
-	socket_destroy(self->local_socket);
-	socket_destroy(self->remote_socket);
-	vmachine_destroy(self->virtual_machine);
-	free(self);
+	if (self != NULL) {
+		if (self->local_socket != NULL) {
+			socket_destroy(self->local_socket);
+		}
+		if (self->remote_socket != NULL) {
+			socket_destroy(self->remote_socket);
+		}
+		if (self->virtual_machine != NULL) {
+			vmachine_destroy(self->virtual_machine);
+		}
+		buffer_destroy(&(self->buffer));
+		free(self);
+	}
 }
 
 void server_start(server_t* self) {
 	bool running = true;
-	// int error_code = 0;
 	
 	socket_bind(self->local_socket);
 	socket_listen(self->local_socket, MAX_LISTEN);
 	socket_accept(self->local_socket, self->remote_socket);
 
 	//	Recibo numero de variables
-	char message[MESSAGE_SIZE];
-	memset(message, 0, MESSAGE_SIZE);	
+	buffer_init(&(self->buffer));
+	// char message[MESSAGE_SIZE];
+	// memset(message, 0, MESSAGE_SIZE);	
 	socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
 
 	self->virtual_machine = vmachine_init(atoi(message));
 
 	//	Recibo bytecodes
 	while (running) {
-		memset(message, 0, MESSAGE_SIZE);
-		socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
+		buffer_reset(&(self->buffer));
+		socket_receive(self->remote_socket, self->buffer, MESSAGE_SIZE - 1);
 		
 		switch ((unsigned char)message[0]) {
 			case IAND:
