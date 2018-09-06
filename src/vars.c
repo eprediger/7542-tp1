@@ -23,6 +23,10 @@ void vars_destroy(var_array_t* self) {
 	free(self->_vars);
 }
 
+int* vars_get_array(var_array_t* self) {
+	return self->_vars;
+}
+
 unsigned int vars_get_array_size(var_array_t* self) {
 	return self->_size;
 }

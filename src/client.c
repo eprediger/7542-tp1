@@ -17,53 +17,72 @@
 //	"00000000\n"
 #define VAR_PRINT_SIZE 9
 
-client_t* client_init(client_t* self, const char* file, const int variables) {
-	//self->client_socket = socket_init();
-	parser_init(&(self->parser), file);
-	self->num_variables = variables;
-	buffer_init(&self->buffer);
-	return self;
+#define BASE 10
+
+void client_init(client_t* self, const char* file, const int variables) {
+	//self->_client_socket = socket_init();
+	parser_init(&(self->_parser), file);
+	// buffer_init(&self->_buffer);
+	self->_num_variables = variables;
 }
 
 void client_destroy(client_t* self) {
-	parser_destroy(self->parser);
-	socket_destroy(self->client_socket);
+	// buffer_destroy(&self->_buffer);
+	parser_destroy(&self->_parser);
+	socket_destroy(&self->_client_socket);
 }
 
 void client_connect(client_t* self, const char* host, const char* service) {
-	self->client_socket = socket_init(host, service, 0);
+	socket_init(&self->_client_socket, host, service, 0);
 
-	socket_connect(self->client_socket);
+	socket_connect(&self->_client_socket);
 }
 
 void client_send_vars_size(client_t* self, const char* num_variables) {
-	int len_message = strlen(num_variables);
-	socket_send(self->client_socket, num_variables, len_message);
+	int vars = (int) strtol(num_variables, NULL, BASE);
+	vars = htonl(vars);
+	socket_send(&self->_client_socket, &vars, sizeof(vars));
+}
+
+static void client_buf_tonl(int* data, int data_size) {
+	for (int i = 0; i < data_size; ++i) {
+		data[i] = htonl(data[i]);
+	}
 }
 
 void client_send_bytecodes(client_t* self) {
-	do {
-		parser_read(self->parser);
-		// char* instruction = parser_get_bytecode(self->parser);
-		// size_t length_instruction = parser_length(self->parser);
-		socket_send(self->client_socket, instruction, length_instruction);
-	} while (!parser_eof(self->parser));
+	while(!parser_feof(&self->_parser)) {
+		parser_read(&self->_parser);
 
-	socket_send(self->client_socket, "\0", strlen("\0"));
-	socket_close_write_channel(self->client_socket);
+		buffer_t temp_buffer = parser_get_buffer(&self->_parser);
+		int* bytecodes = buffer_get_transformed_data(&temp_buffer);
+		int send_size = buffer_get_size(&temp_buffer);
+		client_buf_tonl(bytecodes, send_size);
+		size_t send_size_b = send_size * sizeof(*bytecodes);
+		socket_send(&self->_client_socket, bytecodes, send_size_b);
+	}
+
+	socket_close_write_channel(&self->_client_socket);
 }
 
 void client_receive_variable_dump(client_t* self) {
-	int len_message = VAR_DUMP_MSG_SIZE + (VAR_PRINT_SIZE * self->num_variables);
-	char message[len_message];
-	memset(message, 0, len_message);	
-	socket_receive(self->client_socket, message, len_message - 1);
+	int *variables;
+	size_t recv_size_b;
 
-	fprintf(stdout, "%s\n", message);
+	recv_size_b = sizeof(*variables) * self->_num_variables;
+	variables = malloc(recv_size_b);
+
+	socket_receive(&self->_client_socket, variables, recv_size_b);
+
+	printf("%s\n", "Variables dump");
+	for (int i = 0; i < self->_num_variables; ++i) {
+		printf("%08x\n", variables[i]);
+	}
+
 }
 
 void client_disconnect(client_t* self) {
-	socket_close_connection(self->client_socket);
+	socket_close_connection(&self->_client_socket);
 }
 
 // with testing purposes only

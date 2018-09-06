@@ -3,17 +3,18 @@
 
 #include "vmachine.h"
 #include "socket.h"
+#include "buffer.h"
 
 typedef struct {
-	socket_t* local_socket;
-	socket_t* remote_socket;
-	vmachine_t* virtual_machine;
-	buffer_t buffer;
+	socket_t _local_socket;
+	socket_t _remote_socket;
+	vmachine_t _virtual_machine;
+	buffer_t _buffer;
 } server_t;
 
 // PRE:  
 // POST: 
-server_t* server_init(server_t* self, const char* service);
+void server_init(server_t* self, const char* service);
 
 // PRE:  
 // POST: 

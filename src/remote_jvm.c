@@ -38,9 +38,9 @@ int main(int argc, const char *argv[]) {
 				client_t cliente;
 				const int num_variables = atoi(argv[4]);
 				if (argc == CLIENT_MIN_ARGS) {
-					cliente = client_init(&cliente, NULL, num_variables);		// Se leera de standard input
+					client_init(&cliente, NULL, num_variables);		// Se leera de standard input
 				} else {
-					cliente = client_init(&cliente, argv[5], num_variables);	// argv[5] = <filename>
+					client_init(&cliente, argv[5], num_variables);	// argv[5] = <filename>
 				}
 				client_connect(&cliente, argv[2], argv[3]);	// argv[2] = <host> | argv[3] = port
 				client_send_vars_size(&cliente, argv[4]);	// argv[4] = <num-vars>

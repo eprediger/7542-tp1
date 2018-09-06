@@ -30,122 +30,140 @@
 #define ILOAD	0x15
 
 #define MAX_LISTEN 1
-#define MESSAGE_SIZE 2
 
-server_t* server_init(const char* service) {
-	server_t* self = malloc(sizeof(server_t));
-	
-	self->local_socket = socket_init(NULL, service, AI_PASSIVE);
-
-	self->remote_socket = malloc(sizeof(socket_t));
-
-	return self;
+void server_init(server_t* self, const char* service) {
+	socket_init(&self->_local_socket, NULL, service, AI_PASSIVE);
+	buffer_init(&self->_buffer);
 }
 
 void server_destroy(server_t* self) {
-	if (self != NULL) {
-		if (self->local_socket != NULL) {
-			socket_destroy(self->local_socket);
+	socket_destroy(&(self->_local_socket));
+	socket_destroy(&(self->_remote_socket));
+	vmachine_destroy(&(self->_virtual_machine));
+	buffer_destroy(&(self->_buffer));
+}
+
+static void server_nto_bufl(int* data, int data_size) {
+	for (int i = 0; i < data_size; ++i) {
+		data[i] = ntohl(data[i]);
+	}
+}
+
+static void run_vm_instructions(vmachine_t* vm, int* bytecodes, int size) {
+	for (int i = 0; i < size; ++i) {
+		int bytecode = bytecodes[i];
+		switch (bytecode) {
+			case IAND:
+				vmachine_iand(vm);
+				break;
+			case IOR:
+				vmachine_ior(vm);
+				break;
+			case IXOR:
+				vmachine_ixor(vm);
+				break;
+			case INEG:
+				vmachine_ineg(vm);
+				break;
+			case IADD:
+				vmachine_iadd(vm);
+				break;
+			case ISUB:
+				vmachine_isub(vm);
+				break;
+			case IMUL:
+				vmachine_imul(vm);
+				break;
+			case IDIV:
+				vmachine_idiv(vm);
+				break;
+			case IREM:
+				vmachine_irem(vm);
+				break;
+			case DUP:
+				vmachine_dup(vm);
+				break;
+			case BIPUSH:
+				i++;
+				bytecode = bytecodes[i];
+				vmachine_bipush(vm, bytecode);
+				break;
+			case ISTORE:
+				i++;
+				bytecode = bytecodes[i];
+				vmachine_istore(vm, bytecode);
+				break;
+			case ILOAD:
+				i++;
+				bytecode = bytecodes[i];
+				vmachine_iload(vm, bytecode);
+				break;
 		}
-		if (self->remote_socket != NULL) {
-			socket_destroy(self->remote_socket);
-		}
-		if (self->virtual_machine != NULL) {
-			vmachine_destroy(self->virtual_machine);
-		}
-		buffer_destroy(&(self->buffer));
-		free(self);
+	}
+}
+
+void server_print_variables_dump(server_t* self) {
+	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
+	unsigned int array_size = vars_get_array_size(variables_dump);
+
+	printf("%s\n", "Variables dump");
+	for (int i = 0; i < array_size; ++i) {
+		printf("%08x\n", vars_get_variable_by_index(variables_dump, i));
 	}
 }
 
 void server_start(server_t* self) {
 	bool running = true;
 	
-	socket_bind(self->local_socket);
-	socket_listen(self->local_socket, MAX_LISTEN);
-	socket_accept(self->local_socket, self->remote_socket);
+	socket_bind(&self->_local_socket);
+	socket_listen(&self->_local_socket, MAX_LISTEN);
+	socket_accept(&self->_local_socket, &self->_remote_socket);
 
-	//	Recibo numero de variables
-	buffer_init(&(self->buffer));
-	// char message[MESSAGE_SIZE];
-	// memset(message, 0, MESSAGE_SIZE);	
-	socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
+	//	Recibo numero de variables, se lanza VM
+	int vm_vars = 0;
+	socket_receive(&self->_remote_socket, &vm_vars, sizeof(vm_vars));
+	vm_vars = ntohl(vm_vars);
+	vmachine_init(&self->_virtual_machine, vm_vars);
 
-	self->virtual_machine = vmachine_init(atoi(message));
-
+	int* buf_recv;
+	unsigned int max_recv = buffer_get_max_size(&self->_buffer);
+	unsigned int max_recv_b = sizeof(*buf_recv) * max_recv;
+	buf_recv = malloc(max_recv_b);
 	//	Recibo bytecodes
 	while (running) {
-		buffer_reset(&(self->buffer));
-		socket_receive(self->remote_socket, self->buffer, MESSAGE_SIZE - 1);
+		int received = 0;
+		memset(buf_recv, 0, max_recv_b);
 		
-		switch ((unsigned char)message[0]) {
-			case IAND:
-				vmachine_iand(self->virtual_machine);
-				break;
-			case IOR:
-				vmachine_ior(self->virtual_machine);
-				break;
-			case IXOR:
-				vmachine_ixor(self->virtual_machine);
-				break;
-			case INEG:
-				vmachine_ineg(self->virtual_machine);
-				break;
-			case IADD:
-				vmachine_iadd(self->virtual_machine);
-				break;
-			case ISUB:
-				vmachine_isub(self->virtual_machine);
-				break;
-			case IMUL:
-				vmachine_imul(self->virtual_machine);
-				break;
-			case IDIV:
-				vmachine_idiv(self->virtual_machine);
-				break;
-			case IREM:
-				vmachine_irem(self->virtual_machine);
-				break;
-			case DUP:
-				vmachine_dup(self->virtual_machine);
-				break;
-			case BIPUSH:
-				socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
-				vmachine_bipush(self->virtual_machine, message[1]);
-				break;
-			case ISTORE:
-				socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
-				vmachine_istore(self->virtual_machine, message[1]);
-				break;
-			case ILOAD:
-				socket_receive(self->remote_socket, message, MESSAGE_SIZE - 1);
-				vmachine_iload(self->virtual_machine, message[1]);
-				break;
+		received = socket_receive(&self->_remote_socket, buf_recv, max_recv_b);
+
+		running = (received > 0);
+		
+		if (running) {
+			server_nto_bufl(buf_recv, received);
+			int total_instr = received/sizeof(*buf_recv);
+			run_vm_instructions(&self->_virtual_machine, buf_recv, total_instr);
 		}
-
-		running = (message[0] != '\0');
 	}
-}
-
-void server_print_variables_dump(server_t* self) {
-	char* variables_dump = vmachine_get_vars(self->virtual_machine);
-
-	fprintf(stdout, "%s", variables_dump);
-
-	free(variables_dump);
+	free(buf_recv);
+	server_print_variables_dump(self);
 }
 
 void server_send_variables_dump(server_t* self) {
-	char* variables_dump = vmachine_get_vars(self->virtual_machine);
+	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
 	
-	socket_send(self->local_socket, variables_dump, strlen(variables_dump));
-
-	free(variables_dump);
+	unsigned int array_size = vars_get_array_size(variables_dump);
+	size_t send_size_b = sizeof(array_size);
+	
+	for (int i = 0; i < array_size; ++i) {
+		int elem = vars_get_variable_by_index(variables_dump, i);
+		elem = htonl(elem);
+		socket_send(&self->_local_socket, &elem, send_size_b);
+	}
 }
 
 void server_stop(server_t* self) {
-	socket_close_connection(self->local_socket);
-	socket_close_connection(self->remote_socket);
+	socket_close_connection(&self->_local_socket);
+	socket_close_connection(&self->_remote_socket);
 }
 
 // with testing purposes only

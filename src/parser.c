@@ -4,7 +4,6 @@
 #include <string.h>	// strerror
 #include <errno.h>	// errno
 
-#define BUF_SIZE 100
 
 void parser_init(parser_t* self, const char* filepath) {
 	if (filepath == NULL) {
@@ -16,7 +15,7 @@ void parser_init(parser_t* self, const char* filepath) {
 			exit(EXIT_FAILURE);
 		}
 	}
-	buffer_init(&(self->_buffer), BUF_SIZE);
+	buffer_init(&(self->_buffer));
 }
 
 void parser_destroy(parser_t* self) {
@@ -31,15 +30,22 @@ int parser_feof(parser_t* self) {
 }
 
 void parser_read(parser_t* self) {
-	// size_t fread ( void * ptr, size_t size, size_t count, FILE * stream );
-	char* ptr = buffer_get_data(&(self->_buffer));
-	size_t size = sizeof(*ptr);
-	size_t count = BUF_SIZE;
+	buffer_reset_buffer(&(self->_buffer));
+
+	char* temp = malloc(sizeof(char) * buffer_get_max_size(&self->_buffer));
+	size_t size = sizeof(*temp);
+	size_t count = buffer_get_max_size(&self->_buffer);
 	FILE* stream = self->_file;
-	size_t read_elem = fread(ptr, size, count, stream);
+	size_t read_elem = fread(temp, size, count, stream);
 
 	if (self->_file == stdin) {
 		read_elem--;
 	}
+	buffer_set_data(&(self->_buffer), temp, read_elem);
 	buffer_transform_data(&(self->_buffer), read_elem);
+	free(temp);
+}
+
+buffer_t parser_get_buffer(parser_t* self) {
+	return self->_buffer;
 }

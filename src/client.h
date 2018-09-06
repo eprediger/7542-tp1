@@ -6,14 +6,14 @@
 #include "vars.h"
 
 typedef struct {
-	socket_t* client_socket;
-	parser_t parser;
-	int num_variables;
+	socket_t _client_socket;
+	parser_t _parser;
+	int _num_variables;
 } client_t;
 
 // PRE:  
 // POST: 
-client_t* client_init(client_t* self);
+void client_init(client_t* self, const char* file, const int variables);
 
 // PRE:  
 // POST: 

@@ -18,6 +18,8 @@ void vars_init(var_array_t* self, const unsigned int dim);
 // POST: self no apunta a un sector válido
 void vars_destroy(var_array_t* self);
 
+int* vars_get_array(var_array_t* self);
+
 // 
 // PRE:  
 // POST: 
@@ -40,5 +42,6 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value);
 // PRE:  self iniciado mediante vars_init
 // POST: -
 void vars_print_vars_with_format(var_array_t* self);
+
 
 #endif

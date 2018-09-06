@@ -2,7 +2,6 @@
 
 #include "socket.h"
 
-#include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 
-socket_t* socket_init(const char *node, const char* service, int flags) {
+void socket_init(socket_t* self, const char *node, const char* serv, int flags) {
 	int s = 0;
 	struct addrinfo hints;
 	struct addrinfo* result;
@@ -23,10 +22,10 @@ socket_t* socket_init(const char *node, const char* service, int flags) {
 	hints.ai_socktype = SOCK_STREAM;	// TCP
 	hints.ai_flags = flags;				// Server: AI_PASSIVE | Client: 0
 
-	s = getaddrinfo(node, service, &hints, &result);
+	s = getaddrinfo(node, serv, &hints, &result);
 	if (s != 0) {
 		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(s));
-		socket_destroy(self);
+		// socket_destroy(self);
 		exit(EXIT_FAILURE);
 	}
 
@@ -37,14 +36,10 @@ socket_t* socket_init(const char *node, const char* service, int flags) {
 	int protocol = result->ai_protocol;
 
 	self->_socket = socket(domain, type, protocol);
-
-	return self;
 }
 
 void socket_destroy(socket_t* self) {
-	if (self->_address != NULL) {
-		freeaddrinfo(self->_address);
-	}
+	freeaddrinfo(self->_address);
 	close(self->_socket);
 }
 
@@ -72,7 +67,7 @@ void socket_listen(socket_t* self, int max_request) {
 }
 
 void socket_accept(socket_t* self, socket_t* client_socket) {
-	client_socket->socket = accept(self->_socket, NULL, NULL);
+	client_socket->_socket = accept(self->_socket, NULL, NULL);
 }
 
 void socket_connect(socket_t* self) {
@@ -87,12 +82,13 @@ void socket_connect(socket_t* self) {
 	}
 }
 
-void socket_send(socket_t* self, const char* buf, const int size) {
+int socket_send(socket_t* self, const int* buf, const size_t size) {
 	int sent = 0;
 	int length_sent = 0;
+	bool open_socket = true;
 	bool valid_socket = true;
 
-	while ((sent < size) && valid_socket) {
+	while ((sent < size) && (valid_socket) && (open_socket)) {
 		int remaining = size - sent;
 		length_sent = send(self->_socket, &buf[sent], remaining, MSG_NOSIGNAL);
 
@@ -100,31 +96,35 @@ void socket_send(socket_t* self, const char* buf, const int size) {
 			fprintf(stderr, "sending error: %s\n", strerror(errno));
 			valid_socket = false;
 		} else if (length_sent == 0) {	// Socket cerrado
-			valid_socket = false;
+			open_socket = false;
 		} else {
 			sent += length_sent;
 		}
 	}
+
+	return length_sent;
 }
 
-void socket_receive(socket_t* self, char* buf, int size) {
+int socket_receive(socket_t* self, int* buf, size_t size) {
 	int received = 0;
 	int length_received = 0;
+	bool open_socket = true;
 	bool valid_socket = true;
 
-	while ((received < size) && valid_socket) {
+	while ((received < size) && (valid_socket) && (open_socket)) {
 		int remaining = size - received;
 		length_received = recv(self->_socket, &buf[received], remaining, MSG_NOSIGNAL);
 		
-		if (length_received == 0) {
+		if (length_received < 0) {
 			fprintf(stderr, "receiving error: %s\n", strerror(errno));
 			valid_socket = false;
-		} else if (length_received < 0) {
-			valid_socket = false;
+		} else if (length_received == 0) {
+			open_socket = false;
 		} else {
 			received += length_received;
 		}
 	}
+	return length_received;
 }
 
 void socket_close_write_channel(socket_t* self) {

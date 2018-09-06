@@ -98,7 +98,7 @@ void vmachine_istore(vmachine_t* self, unsigned int index);
 // POST: 
 void vmachine_iload(vmachine_t* self, unsigned int index);
 
-char* vmachine_get_vars(vmachine_t* self);
+var_array_t* vmachine_get_vars(vmachine_t* self);
 
 /* FOR TESTING ONLY */
 void vmachine_print_stack(vmachine_t* self);
