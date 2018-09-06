@@ -14,8 +14,6 @@
 #include <unistd.h>
 
 socket_t* socket_init(const char *node, const char* service, int flags) {
-	socket_t* self = malloc(sizeof(socket_t));
-	
 	int s = 0;
 	struct addrinfo hints;
 	struct addrinfo* result;
@@ -44,13 +42,10 @@ socket_t* socket_init(const char *node, const char* service, int flags) {
 }
 
 void socket_destroy(socket_t* self) {
-	if (self != NULL) {
-		if (self->_address != NULL) {
-			freeaddrinfo(self->_address);
-		}
-		close(self->_socket);
-		free(self);
+	if (self->_address != NULL) {
+		freeaddrinfo(self->_address);
 	}
+	close(self->_socket);
 }
 
 void socket_bind(socket_t* self) {

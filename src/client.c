@@ -17,21 +17,17 @@
 //	"00000000\n"
 #define VAR_PRINT_SIZE 9
 
-client_t* client_init(const char* file, const int size) {
-	client_t* self = malloc(sizeof(client_t));
+client_t* client_init(client_t* self, const char* file, const int variables) {
 	//self->client_socket = socket_init();
 	parser_init(&(self->parser), file);
-	self->num_variables = size;
+	self->num_variables = variables;
 	buffer_init(&self->buffer);
 	return self;
 }
 
 void client_destroy(client_t* self) {
-	if (self != NULL) {
-		parser_destroy(self->parser);
-		socket_destroy(self->client_socket);
-		free(self);
-	}
+	parser_destroy(self->parser);
+	socket_destroy(self->client_socket);
 }
 
 void client_connect(client_t* self, const char* host, const char* service) {

@@ -7,6 +7,7 @@ src/tp
 
 # Directories that won't be included
 test/
+informe/
 
 # Directories that could be included
 linter/

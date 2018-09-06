@@ -13,7 +13,7 @@ typedef struct {
 
 // PRE:  
 // POST: 
-server_t* server_init(const char* service);
+server_t* server_init(server_t* self, const char* service);
 
 // PRE:  
 // POST: 

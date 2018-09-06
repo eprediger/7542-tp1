@@ -9,12 +9,11 @@ typedef struct {
 	socket_t* client_socket;
 	parser_t parser;
 	int num_variables;
-	buffer_t buffer;
 } client_t;
 
 // PRE:  
 // POST: 
-client_t* client_init();
+client_t* client_init(client_t* self);
 
 // PRE:  
 // POST: 

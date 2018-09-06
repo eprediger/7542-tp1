@@ -15,9 +15,6 @@
 // run with: ./testtp <user> <host> <port> [<filename>]
 
 int main(int argc, const char *argv[]) {
-	server_t* servidor = NULL;
-	client_t* cliente = NULL;
-
 	if (argc > MIN_ARGS) {
 		const char* nombre_serv = "server";
 		const char* nombre_cli  = "client";
@@ -25,11 +22,12 @@ int main(int argc, const char *argv[]) {
 		if (strncmp(argv[1], nombre_serv, strlen(argv[1])) == 0) {
 			if (argc == SERVER_ARGS) {
 				// Aca empieza el server
-				servidor = server_init(argv[2]);	// argv[2] = <port>
-				server_start(servidor);
-				server_send_variables_dump(servidor);
-				server_stop(servidor);
-				server_destroy(servidor);
+				server_t servidor;
+				server_init(&servidor, argv[2]);	// argv[2] = <port>
+				server_start(&servidor);
+				server_send_variables_dump(&servidor);
+				server_stop(&servidor);
+				server_destroy(&servidor);
 			} else {
 				fprintf(stderr, "Usage: %s %s <port>\n", argv[0], argv[1]);
 				exit(EXIT_FAILURE);
@@ -37,18 +35,19 @@ int main(int argc, const char *argv[]) {
 		} else if (strncmp(argv[1], nombre_cli, strlen(argv[1])) == 0) {
 			if ((argc == CLIENT_MIN_ARGS) || (argc == CLIENT_MAX_ARGS)) {
 				// Aca empieza el client
+				client_t cliente;
 				const int num_variables = atoi(argv[4]);
 				if (argc == CLIENT_MIN_ARGS) {
-					cliente = client_init(NULL, num_variables);		// Se leera de standard input
+					cliente = client_init(&cliente, NULL, num_variables);		// Se leera de standard input
 				} else {
-					cliente = client_init(argv[5], num_variables);	// argv[5] = <filename>
+					cliente = client_init(&cliente, argv[5], num_variables);	// argv[5] = <filename>
 				}
-				client_connect(cliente, argv[2], argv[3]);	// argv[2] = <host> | argv[3] = port
-				client_send_vars_size(cliente, argv[4]);	// argv[4] = <num-vars>
-				client_send_bytecodes(cliente);
-				client_receive_variable_dump(cliente);
-				client_disconnect(cliente);
-				client_destroy(cliente);
+				client_connect(&cliente, argv[2], argv[3]);	// argv[2] = <host> | argv[3] = port
+				client_send_vars_size(&cliente, argv[4]);	// argv[4] = <num-vars>
+				client_send_bytecodes(&cliente);
+				client_receive_variable_dump(&cliente);
+				client_disconnect(&cliente);
+				client_destroy(&cliente);
 			} else {
 				fprintf(stderr, "Usage: %s %s <host> <port> <num-vars> [<filename>]\n", argv[0], argv[1]);
 				exit(EXIT_FAILURE);
