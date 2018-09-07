@@ -102,7 +102,7 @@ int socket_send(socket_t* self, const int* buf, const size_t size) {
 		}
 	}
 
-	return length_sent;
+	return sent;
 }
 
 int socket_receive(socket_t* self, int* buf, size_t size) {
@@ -124,7 +124,7 @@ int socket_receive(socket_t* self, int* buf, size_t size) {
 			received += length_received;
 		}
 	}
-	return length_received;
+	return received;
 }
 
 void socket_close_write_channel(socket_t* self) {

@@ -78,7 +78,6 @@ void client_receive_variable_dump(client_t* self) {
 	for (int i = 0; i < self->_num_variables; ++i) {
 		printf("%08x\n", variables[i]);
 	}
-
 }
 
 void client_disconnect(client_t* self) {

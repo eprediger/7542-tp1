@@ -139,8 +139,8 @@ void server_start(server_t* self) {
 		running = (received > 0);
 		
 		if (running) {
-			server_nto_bufl(buf_recv, received);
 			int total_instr = received/sizeof(*buf_recv);
+			server_nto_bufl(buf_recv, total_instr);
 			run_vm_instructions(&self->_virtual_machine, buf_recv, total_instr);
 		}
 	}
