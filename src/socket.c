@@ -12,7 +12,8 @@
 #include <netdb.h>
 #include <unistd.h>
 
-void socket_init(socket_t* self, const char *node, const char* serv, int flags) {
+void socket_init(socket_t* self, const char *node,\
+				 const char* serv, int flags) {
 	int s = 0;
 	struct addrinfo hints;
 	struct addrinfo* result;
@@ -107,21 +108,21 @@ int socket_send(socket_t* self, const int* buf, const size_t size) {
 
 int socket_receive(socket_t* self, int* buf, size_t size) {
 	int received = 0;
-	int length_received = 0;
+	int len_recv = 0;
 	bool open_socket = true;
 	bool valid_socket = true;
 
 	while ((received < size) && (valid_socket) && (open_socket)) {
 		int remaining = size - received;
-		length_received = recv(self->_socket, &buf[received], remaining, MSG_NOSIGNAL);
+		len_recv = recv(self->_socket, &buf[received], remaining, MSG_NOSIGNAL);
 		
-		if (length_received < 0) {
+		if (len_recv < 0) {
 			fprintf(stderr, "receiving error: %s\n", strerror(errno));
 			valid_socket = false;
-		} else if (length_received == 0) {
+		} else if (len_recv == 0) {
 			open_socket = false;
 		} else {
-			received += length_received;
+			received += len_recv;
 		}
 	}
 	return received;
@@ -134,13 +135,3 @@ void socket_close_write_channel(socket_t* self) {
 void socket_close_connection(socket_t* self) {
 	shutdown(self->_socket, SHUT_RDWR);	
 }
-
-// with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 socket.c parser.c vmachine.c vars.c stack.c node.c -o ../test/testsocket
-// run with: ../test/testsocket <host> <port>
-
-/*int main(int argc, char const *argv[]) {
-	
-
-	return 0;
-}*/

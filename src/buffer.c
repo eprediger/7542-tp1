@@ -40,10 +40,10 @@ void buffer_set_data(buffer_t* self, const char* ptr, size_t size) {
 }
 
 void buffer_transform_data(buffer_t* self, size_t elem) {
-	char str[2];
+	char str[3];
 	// printf("Elementos leidos: %lu\n", elem);
 	for (int i = 0; i < elem; ++i) {
-		sprintf(&str[0], "%2x", self->_data[i]);
+		snprintf(&str[0], 3*sizeof(&str[0]), "%2x", self->_data[i]);
 		// printf("str: %s | ", str);
 		self->_numbers[i] = (int) strtol(&str[0], NULL, BASE);
 		// printf("num: %x\n", self->_numbers[i]);

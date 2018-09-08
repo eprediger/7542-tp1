@@ -157,7 +157,7 @@ void server_send_variables_dump(server_t* self) {
 	for (int i = 0; i < array_size; ++i) {
 		int elem = vars_get_variable_by_index(variables_dump, i);
 		elem = htonl(elem);
-		socket_send(&self->_local_socket, &elem, send_size_b);
+		socket_send(&self->_remote_socket, &elem, send_size_b);
 	}
 }
 
@@ -165,7 +165,3 @@ void server_stop(server_t* self) {
 	socket_close_connection(&self->_local_socket);
 	socket_close_connection(&self->_remote_socket);
 }
-
-// with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 server.c parser.c vmachine.c vars.c stack.c node.c -o testserver
-// run with: ./testserver <host> <port>

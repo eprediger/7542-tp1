@@ -44,34 +44,3 @@ void stack_print(stack_t* self) {
 	}
 	printf("\n");
 }
-
-// with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 stack.c node.c -o ../test/teststack
-// run with: ../test/teststack <num>...
-
-/*int main(int argc, const char *argv[]) {
-	if (argc < 2) {
-		printf("Usage: ./stacktest <num>...\n");
-		return 1;
-	}
-
-	stack_t pila;
-	stack_init(&pila);
-
-	int val;
-	for (int i = 1; i < argc; ++i) {
-		val = atoi(argv[i]);
-		stack_push(&pila, val);
-		printf("Stack top is: %d\n", stack_get_top(&pila));
-		stack_print(&pila);
-	}
-
-	// for (int i = 1; i < argc; ++i) {
-	// 	printf("Popping: %d\n", stack_pop(&pila));
-	// }
-
-
-	stack_destroy(&pila);
-
-	return 0;
-}*/

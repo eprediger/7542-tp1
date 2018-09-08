@@ -12,11 +12,6 @@
 #include <unistd.h>
 #include <netdb.h>
 
-//	"Variables dump\n"
-#define VAR_DUMP_MSG_SIZE 15
-//	"00000000\n"
-#define VAR_PRINT_SIZE 9
-
 #define BASE 10
 
 void client_init(client_t* self, const char* file, const int variables) {
@@ -65,6 +60,12 @@ void client_send_bytecodes(client_t* self) {
 	socket_close_write_channel(&self->_client_socket);
 }
 
+static void server_nto_bufl(int* data, int data_size) {
+	for (int i = 0; i < data_size; ++i) {
+		data[i] = ntohl(data[i]);
+	}
+}
+
 void client_receive_variable_dump(client_t* self) {
 	int *variables;
 	size_t recv_size_b;
@@ -74,16 +75,15 @@ void client_receive_variable_dump(client_t* self) {
 
 	socket_receive(&self->_client_socket, variables, recv_size_b);
 
+	server_nto_bufl(variables, self->_num_variables);
+
 	printf("%s\n", "Variables dump");
 	for (int i = 0; i < self->_num_variables; ++i) {
 		printf("%08x\n", variables[i]);
 	}
+	free(variables);
 }
 
 void client_disconnect(client_t* self) {
 	socket_close_connection(&self->_client_socket);
 }
-
-// with testing purposes only
-// compile with: gcc -Wall -Werror -std=c99 -pedantic -ggdb -O0 client.c parser.c vmachine.c vars.c stack.c node.c -o testclient
-// run with: ./testclient <host> <port>
