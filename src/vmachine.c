@@ -114,10 +114,10 @@ var_array_t* vmachine_get_vars(vmachine_t* self) {
 }
 
 /* FOR TESTING ONLY */
-void vmachine_print_stack(vmachine_t* self) {
-	stack_print(&self->_stack);
-}
+// void vmachine_print_stack(vmachine_t* self) {
+// 	stack_print(&self->_stack);
+// }
 
-void vmachine_print_vars(vmachine_t* self) {
-	vars_print_vars_with_format(&self->_variables);
-}
+// void vmachine_print_vars(vmachine_t* self) {
+// 	vars_print_vars_with_format(&self->_variables);
+// }

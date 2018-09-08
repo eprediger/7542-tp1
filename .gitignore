@@ -8,6 +8,8 @@ src/tp
 # Directories that won't be included
 test/
 informe/
+entregas/
+inputs/
 
 # Directories that could be included
 linter/

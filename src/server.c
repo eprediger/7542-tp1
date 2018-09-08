@@ -38,7 +38,7 @@ void server_init(server_t* self, const char* service) {
 
 void server_destroy(server_t* self) {
 	socket_destroy(&(self->_local_socket));
-	socket_destroy(&(self->_remote_socket));
+	// socket_destroy(&(self->_remote_socket));
 	vmachine_destroy(&(self->_virtual_machine));
 	buffer_destroy(&(self->_buffer));
 }
@@ -50,6 +50,7 @@ static void server_nto_bufl(int* data, int data_size) {
 }
 
 static void run_vm_instructions(vmachine_t* vm, int* bytecodes, int size) {
+	printf("%s\n", "Bytecode trace");
 	for (int i = 0; i < size; ++i) {
 		int bytecode = bytecodes[i];
 		switch (bytecode) {
@@ -106,13 +107,13 @@ void server_print_variables_dump(server_t* self) {
 	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
 	unsigned int array_size = vars_get_array_size(variables_dump);
 
-	printf("%s\n", "Variables dump");
+	printf("\n%s\n", "Variables dump");
 	for (int i = 0; i < array_size; ++i) {
 		printf("%08x\n", vars_get_variable_by_index(variables_dump, i));
 	}
 }
 
-void server_start(server_t* self) {
+int server_start(server_t* self) {
 	bool running = true;
 	
 	socket_bind(&self->_local_socket);
@@ -128,7 +129,13 @@ void server_start(server_t* self) {
 	int* buf_recv;
 	unsigned int max_recv = buffer_get_max_size(&self->_buffer);
 	unsigned int max_recv_b = sizeof(*buf_recv) * max_recv;
-	buf_recv = malloc(max_recv_b);
+	
+	int* temp = malloc(max_recv_b);
+	if (temp != NULL) {
+		buf_recv = temp;
+	} else {
+		return 1;
+	}
 	//	Recibo bytecodes
 	while (running) {
 		int received = 0;
@@ -146,19 +153,27 @@ void server_start(server_t* self) {
 	}
 	free(buf_recv);
 	server_print_variables_dump(self);
+
+	return 0;
+}
+
+static void server_buf_tonl(int* data, int data_size) {
+	for (int i = 0; i < data_size; ++i) {
+		data[i] = htonl(data[i]);
+	}
 }
 
 void server_send_variables_dump(server_t* self) {
 	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
+
+	int* vars = vars_get_array(variables_dump);
+	unsigned int vars_size = vars_get_array_size(variables_dump);
 	
-	unsigned int array_size = vars_get_array_size(variables_dump);
-	size_t send_size_b = sizeof(array_size);
+	size_t send_size_b = sizeof(*vars) * vars_size;
 	
-	for (int i = 0; i < array_size; ++i) {
-		int elem = vars_get_variable_by_index(variables_dump, i);
-		elem = htonl(elem);
-		socket_send(&self->_remote_socket, &elem, send_size_b);
-	}
+	server_buf_tonl(vars, vars_size);
+	
+	socket_send(&self->_remote_socket, &vars[0], send_size_b);
 }
 
 void server_stop(server_t* self) {

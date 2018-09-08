@@ -41,7 +41,7 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value);
 // array en notación hexadecimal de 8 dígitos
 // PRE:  self iniciado mediante vars_init
 // POST: -
-void vars_print_vars_with_format(var_array_t* self);
+// void vars_print_vars_with_format(var_array_t* self);
 
 
 #endif

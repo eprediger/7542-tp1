@@ -22,7 +22,7 @@ void server_destroy(server_t* self);
 
 // PRE:  
 // POST: 
-void server_start(server_t* self);
+int server_start(server_t* self);
 
 // PRE:  
 // POST: 

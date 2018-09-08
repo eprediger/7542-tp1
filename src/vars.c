@@ -40,10 +40,10 @@ void vars_set_variable_by_index(var_array_t* self, int index, int value) {
 }
 
 /* FOR TESTING ONLY */
-void vars_print_vars_with_format(var_array_t* self) {
-	printf("%s\n", "\nVariables dump");
+// void vars_print_vars_with_format(var_array_t* self) {
+// 	printf("%s\n", "\nVariables dump");
 	
-	for (int i = 0; i < self->_size; ++i) {
-		fprintf(stdout, "%08x\n", vars_get_variable_by_index(self, i));
-	}
-}
+// 	for (int i = 0; i < self->_size; ++i) {
+// 		fprintf(stdout, "%08x\n", vars_get_variable_by_index(self, i));
+// 	}
+// }

@@ -36,6 +36,6 @@ int stack_pop(stack_t* self);
 int stack_get_top(stack_t* self);
 
 /* FOR TESTING ONLY */
-void stack_print(stack_t* self);
+// void stack_print(stack_t* self);
 
 #endif
