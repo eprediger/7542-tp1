@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 // Virtual Machine Bytecodes
-#define IAND	0X7E
+#define IAND	0x7E
 #define IOR		0x80
 #define IXOR	0x82
 #define INEG	0x74
@@ -32,13 +32,16 @@
 #define MAX_LISTEN 1
 
 void server_init(server_t* self, const char* service) {
+	int init_error = 0;
 	socket_init(&self->_local_socket, NULL, service, AI_PASSIVE);
 	buffer_init(&self->_buffer);
+	if (init_error != 0) {
+		
+	}
 }
 
 void server_destroy(server_t* self) {
 	socket_destroy(&(self->_local_socket));
-	// socket_destroy(&(self->_remote_socket));
 	vmachine_destroy(&(self->_virtual_machine));
 	buffer_destroy(&(self->_buffer));
 }
@@ -105,7 +108,7 @@ static void run_vm_instructions(vmachine_t* vm, int* bytecodes, int size) {
 
 void server_print_variables_dump(server_t* self) {
 	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
-	unsigned int array_size = vars_get_array_size(variables_dump);
+	size_t array_size = vars_get_array_size(variables_dump);
 
 	printf("\n%s\n", "Variables dump");
 	for (int i = 0; i < array_size; ++i) {
@@ -127,20 +130,15 @@ int server_start(server_t* self) {
 	vmachine_init(&self->_virtual_machine, vm_vars);
 
 	int* buf_recv;
-	unsigned int max_recv = buffer_get_max_size(&self->_buffer);
-	unsigned int max_recv_b = sizeof(*buf_recv) * max_recv;
+	size_t max_recv = buffer_get_max_size(&self->_buffer);
+	size_t max_recv_b = sizeof(*buf_recv) * max_recv;
+	buf_recv = buffer_get_transformed_data(&self->_buffer);
 	
-	int* temp = malloc(max_recv_b);
-	if (temp != NULL) {
-		buf_recv = temp;
-	} else {
-		return 1;
-	}
 	//	Recibo bytecodes
 	while (running) {
 		int received = 0;
-		memset(buf_recv, 0, max_recv_b);
-		
+		buffer_reset(&self->_buffer);
+
 		received = socket_receive(&self->_remote_socket, buf_recv, max_recv_b);
 
 		running = (received > 0);
@@ -151,7 +149,6 @@ int server_start(server_t* self) {
 			run_vm_instructions(&self->_virtual_machine, buf_recv, total_instr);
 		}
 	}
-	free(buf_recv);
 	server_print_variables_dump(self);
 
 	return 0;
@@ -167,7 +164,7 @@ void server_send_variables_dump(server_t* self) {
 	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
 
 	int* vars = vars_get_array(variables_dump);
-	unsigned int vars_size = vars_get_array_size(variables_dump);
+	size_t vars_size = vars_get_array_size(variables_dump);
 	
 	size_t send_size_b = sizeof(*vars) * vars_size;
 	

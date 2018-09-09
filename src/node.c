@@ -8,8 +8,6 @@ void node_init(node_t* self, int value) {
 	self->_next = NULL;
 }
 
-void node_destroy(node_t* self) { }
-
 int node_get_value(node_t* self) {
 	return self->_value;
 }

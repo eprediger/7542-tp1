@@ -9,7 +9,7 @@ void parser_init(parser_t* self, const char* filepath) {
 	if (filepath == NULL) {
 		self->_file = stdin;
 	} else {
-		self->_file = fopen(filepath, "r");
+		self->_file = fopen(filepath, "rb");
 		if (self->_file == NULL) {
 			fprintf(stderr, "Error opening file %s: %s\n", filepath, strerror(errno));
 			exit(EXIT_FAILURE);
@@ -30,17 +30,15 @@ int parser_feof(parser_t* self) {
 }
 
 void parser_read(parser_t* self) {
-	buffer_reset_buffer(&(self->_buffer));
+	buffer_reset(&(self->_buffer));
 
-	char* temp = malloc(sizeof(char) * buffer_get_max_size(&self->_buffer));
+	unsigned char* temp;
+	temp = malloc(sizeof(*temp) * buffer_get_max_size(&self->_buffer));
 	size_t size = sizeof(*temp);
 	size_t count = buffer_get_max_size(&self->_buffer);
 	FILE* stream = self->_file;
 	size_t read_elem = fread(temp, size, count, stream);
 
-	if (self->_file == stdin) {
-		read_elem--;
-	}
 	buffer_set_data(&(self->_buffer), temp, read_elem);
 	buffer_transform_data(&(self->_buffer), read_elem);
 	free(temp);

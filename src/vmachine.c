@@ -42,7 +42,7 @@ void vmachine_ixor(vmachine_t* self) {
 
 void vmachine_ineg(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
-	int result = ~a;
+	int result = -a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "ineg");
 }
@@ -50,7 +50,7 @@ void vmachine_ineg(vmachine_t* self) {
 void vmachine_iadd(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
 	int b = stack_pop(&self->_stack);
-	int result = a + b;
+	int result = b + a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "iadd");
 }
@@ -58,7 +58,7 @@ void vmachine_iadd(vmachine_t* self) {
 void vmachine_isub(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
 	int b = stack_pop(&self->_stack);
-	int result = a - b;
+	int result = b - a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "isub");
 }
@@ -66,7 +66,7 @@ void vmachine_isub(vmachine_t* self) {
 void vmachine_imul(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
 	int b = stack_pop(&self->_stack);
-	int result = a * b;
+	int result = b * a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "imul");
 }
@@ -74,7 +74,7 @@ void vmachine_imul(vmachine_t* self) {
 void vmachine_idiv(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
 	int b = stack_pop(&self->_stack);
-	int result = a / b;
+	int result = b / a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "idiv");
 }
@@ -82,7 +82,7 @@ void vmachine_idiv(vmachine_t* self) {
 void vmachine_irem(vmachine_t* self) {
 	int a = stack_pop(&self->_stack);
 	int b = stack_pop(&self->_stack);
-	int result = a % b;
+	int result = b % a;
 	stack_push(&self->_stack, result);
 	fprintf(stdout, "%s\n", "irem");
 }
@@ -97,13 +97,13 @@ void vmachine_bipush(vmachine_t* self, int val) {
 	fprintf(stdout, "%s\n", "bipush");
 }
 
-void vmachine_istore(vmachine_t* self, unsigned int index) {
+void vmachine_istore(vmachine_t* self, size_t index) {
 	int popped_item = stack_pop(&self->_stack);
 	vars_set_variable_by_index(&self->_variables, index, popped_item);
 	fprintf(stdout, "%s\n", "istore");
 }
 
-void vmachine_iload(vmachine_t* self, unsigned int index) {
+void vmachine_iload(vmachine_t* self, size_t index) {
 	int reg_val = vars_get_variable_by_index(&self->_variables, index);
 	stack_push(&self->_stack, reg_val);
 	fprintf(stdout, "%s\n", "iload");
@@ -112,12 +112,3 @@ void vmachine_iload(vmachine_t* self, unsigned int index) {
 var_array_t* vmachine_get_vars(vmachine_t* self) {
 	return &self->_variables;
 }
-
-/* FOR TESTING ONLY */
-// void vmachine_print_stack(vmachine_t* self) {
-// 	stack_print(&self->_stack);
-// }
-
-// void vmachine_print_vars(vmachine_t* self) {
-// 	vars_print_vars_with_format(&self->_variables);
-// }

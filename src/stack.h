@@ -7,35 +7,30 @@ typedef struct stack {
 	node_t* _top;	// privado
 } stack_t;
 
-// Devuelve una instancia de stack_t vacía
 // PRE:  -
-// POST: stack_t apunta a un sector válido
+// POST: crea un stack vacío
 void stack_init(stack_t* self);
 
-// Libera recursos asociados a self
 // PRE:  self iniciado mediante stack_init
-// POST: self no apunta a un sector válido
+// POST: deja el stack vaçio liberando
+// los recursos asociados a self
 void stack_destroy(stack_t* self);
 
-// Incrementa el stack con el valor val
 // PRE:  self iniciado mediante stack_init
-// POST: se incrementa en uno el tamaño de la pila
+// POST: se agrega un elemento a la pila con
+// el valor val, siendo este el nuevo tope
 void stack_push(stack_t* self, int val);
 
-// Decrementa el stack y retorna el ultimo valor
-// ingresado mediante stack_push
-// PRE:  self iniciado mediante stack_init,
+// PRE: self iniciado mediante stack_init,
 // con al menos un elemento
-// POST: se decrementa en uno el tamaño de la pila
+// POST: se retira el último elemento ingresado a la
+// pila decremetandose y retornando su valor asociado
 int stack_pop(stack_t* self);
 
-// Devuelve el primer elemento del stack.
 // PRE:  self iniciado mediante stack_init,
 // con al menos un elemento
-// POST: el stack no se modifica
+// POST: retorna el valor alojado en
+// el tope del stack sin modificarlo
 int stack_get_top(stack_t* self);
-
-/* FOR TESTING ONLY */
-// void stack_print(stack_t* self);
 
 #endif

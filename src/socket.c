@@ -12,7 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 
-void socket_init(socket_t* self, const char *node,\
+int socket_init(socket_t* self, const char *node,\
 				 const char* serv, int flags) {
 	int s = 0;
 	struct addrinfo hints;
@@ -26,8 +26,7 @@ void socket_init(socket_t* self, const char *node,\
 	s = getaddrinfo(node, serv, &hints, &result);
 	if (s != 0) {
 		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(s));
-		// socket_destroy(self);
-		exit(EXIT_FAILURE);
+		return -1;
 	}
 
 	self->_address = result;
@@ -37,6 +36,12 @@ void socket_init(socket_t* self, const char *node,\
 	int protocol = result->ai_protocol;
 
 	self->_socket = socket(domain, type, protocol);
+    if (self->_socket == -1) {
+       	fprintf(stderr, "socket error: %s\n", strerror(errno));
+       	return -1;
+   	} 
+	
+	return 0;
 }
 
 void socket_destroy(socket_t* self) {
@@ -45,11 +50,19 @@ void socket_destroy(socket_t* self) {
 }
 
 void socket_bind(socket_t* self) {
+	int bind_error = 0;
+	int o = 1;	// one
+	if (setsockopt(self->_socket,SOL_SOCKET,SO_REUSEADDR,&o,sizeof(o)) == -1) {
+		fprintf(stderr, "reusing address error: %s\n", strerror(errno));
+		socket_destroy(self);
+		exit(EXIT_FAILURE);
+	}
+
 	struct sockaddr* address = self->_address->ai_addr;
 	socklen_t address_len = self->_address->ai_addrlen;
 
-	int s = bind(self->_socket, address, address_len);
-	if (s == -1) {
+	bind_error = bind(self->_socket, address, address_len);
+	if (bind_error == -1) {
 		fprintf(stderr, "binding error: %s\n", strerror(errno));
 		socket_destroy(self);
 		exit(EXIT_FAILURE);
@@ -71,7 +84,7 @@ void socket_accept(socket_t* self, socket_t* client_socket) {
 	client_socket->_socket = accept(self->_socket, NULL, NULL);
 }
 
-void socket_connect(socket_t* self) {
+int socket_connect(socket_t* self) {
 	struct sockaddr* address = self->_address->ai_addr;
 	socklen_t address_len = self->_address->ai_addrlen;
 	
@@ -79,8 +92,10 @@ void socket_connect(socket_t* self) {
 	if (s == -1) {
 		fprintf(stderr, "connection error: %s\n", strerror(errno));
 		socket_destroy(self);
-		exit(EXIT_FAILURE);
+		return -1;
 	}
+
+	return 0;
 }
 
 int socket_send(socket_t* self, const int* buf, const size_t size) {

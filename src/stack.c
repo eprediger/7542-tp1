@@ -33,14 +33,3 @@ int stack_pop(stack_t* self) {
 int stack_get_top(stack_t* self) {
 	return node_get_value(self->_top);
 }
-
-/* FOR TESTING ONLY */
-// void stack_print(stack_t* self) {
-// 	printf("%s", "Stack: ");
-// 	node_t* temp = self->_top;
-// 	while (temp != NULL) {
-// 		printf("%x | ", node_get_value(temp));
-// 		temp = node_get_next(temp);
-// 	}
-// 	printf("\n");
-// }

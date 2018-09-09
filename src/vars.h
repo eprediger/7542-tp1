@@ -1,47 +1,37 @@
 #ifndef __VARS_H__
 #define __VARS_H__
 
+#include <stdlib.h>
+
 typedef struct var_array {
 	int* _vars;	// privado
-	unsigned int _size;	// privado
+	size_t _size;	// privado
 } var_array_t;
 
-// Devuelve una instancia de var_array_t
-// de tamanio dim
 // PRE:  -
-// POST: var_array_t apunta a un sector 
-// válido de memoria.
-void vars_init(var_array_t* self, const unsigned int dim);
+// POST: crea un arreglo de variables de dimension dim
+void vars_init(var_array_t* self, const size_t dim);
 
-// Libera recursos asociados a self
 // PRE:  self iniciado mediante vars_init
-// POST: self no apunta a un sector válido
+// POST: libera recursos asociados a self
 void vars_destroy(var_array_t* self);
 
+// PRE:  self iniciado mediante vars_init
+// POST: devuelve el arreglo de variables
 int* vars_get_array(var_array_t* self);
 
-// 
-// PRE:  
-// POST: 
-unsigned int vars_get_array_size(var_array_t* self);
-
-// Retorna valor en posicion indicada
 // PRE:  self iniciado mediante vars_init
-//       0 < index < dim array
-// POST: no se modifica el vector
-int vars_get_variable_by_index(var_array_t* self, int index);
+// POST: retorna la dimension del arreglo
+size_t vars_get_array_size(var_array_t* self);
 
-// Modifica el valor del indice indicado en el array
 // PRE:  self iniciado mediante vars_init
-//       index < dim array
-// POST: array en indice index toma valor value
-void vars_set_variable_by_index(var_array_t* self, int index, int value);
+//       0 <= index < dim array-1
+// POST: retorna valor en posicion indicada
+int vars_get_variable_by_index(var_array_t* self, size_t index);
 
-// Imprime por salida estandar el contenido del
-// array en notación hexadecimal de 8 dígitos
 // PRE:  self iniciado mediante vars_init
-// POST: -
-// void vars_print_vars_with_format(var_array_t* self);
-
+//       0 <= index < dim array-1
+// POST: el array en indice index toma valor value
+void vars_set_variable_by_index(var_array_t* self, size_t index, int value);
 
 #endif
