@@ -47,4 +47,12 @@ void buffer_transform_data(buffer_t* self, size_t elem);
 // POST: devuelve los datos en formato entero
 int* buffer_get_transformed_data(buffer_t* self);
 
+// PRE:  datos convertidos en buffer mediante buffer_transform_data
+// POST: convierte los valores alojados en data al endianness de la red
+void buffer_htonl(int* data, int data_size);
+
+// PRE:  datos convertidos en buffer mediante buffer_transform_data
+// POST: convierte los valores alojados en data al endianness de la maquina
+void buffer_ntohl(int* data, int data_size);
+
 #endif

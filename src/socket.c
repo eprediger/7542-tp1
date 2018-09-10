@@ -98,14 +98,14 @@ int socket_connect(socket_t* self) {
 	return 0;
 }
 
-int socket_send(socket_t* self, const int* buf, const size_t size) {
-	int sent = 0;
+size_t socket_send(socket_t* self, const int* buf, const size_t size) {
+	size_t sent = 0;
 	int length_sent = 0;
 	bool open_socket = true;
 	bool valid_socket = true;
 
 	while ((sent < size) && (valid_socket) && (open_socket)) {
-		int remaining = size - sent;
+		size_t remaining = size - sent;
 		length_sent = send(self->_socket, &buf[sent], remaining, MSG_NOSIGNAL);
 
 		if (length_sent < 0) {	// Error al enviar
@@ -121,20 +121,20 @@ int socket_send(socket_t* self, const int* buf, const size_t size) {
 	return sent;
 }
 
-int socket_receive(socket_t* self, int* buf, size_t size) {
-	int received = 0;
+size_t socket_receive(socket_t* self, int* buf, size_t size) {
+	size_t received = 0;
 	int len_recv = 0;
 	bool open_socket = true;
 	bool valid_socket = true;
 
 	while ((received < size) && (valid_socket) && (open_socket)) {
-		int remaining = size - received;
+		size_t remaining = size - received;
 		len_recv = recv(self->_socket, &buf[received], remaining, MSG_NOSIGNAL);
 		
-		if (len_recv < 0) {
+		if (len_recv < 0) {	// Error al enviar
 			fprintf(stderr, "receiving error: %s\n", strerror(errno));
 			valid_socket = false;
-		} else if (len_recv == 0) {
+		} else if (len_recv == 0) {	// Socket cerrado
 			open_socket = false;
 		} else {
 			received += len_recv;

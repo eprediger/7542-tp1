@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <netdb.h>
 
-#define BASE 10
+#define BASE10 10
 
 void client_init(client_t* self, const char* file, const int variables) {
 	// self->_client_socket = socket_init();
@@ -40,15 +40,9 @@ void client_connect(client_t* self, const char* host, const char* service) {
 }
 
 void client_send_vars_size(client_t* self, const char* num_variables) {
-	int vars = (int) strtol(num_variables, NULL, BASE);
+	int vars = (int) strtol(num_variables, NULL, BASE10);
 	vars = htonl(vars);
 	socket_send(&self->_client_socket, &vars, sizeof(vars));
-}
-
-static void client_buf_tonl(int* data, int data_size) {
-	for (int i = 0; i < data_size; ++i) {
-		data[i] = htonl(data[i]);
-	}
 }
 
 void client_send_bytecodes(client_t* self) {
@@ -58,18 +52,12 @@ void client_send_bytecodes(client_t* self) {
 		buffer_t temp_buffer = parser_get_buffer(&self->_parser);
 		int* bytecodes = buffer_get_transformed_data(&temp_buffer);
 		int send_size = buffer_get_size(&temp_buffer);
-		client_buf_tonl(bytecodes, send_size);
+		buffer_htonl(bytecodes, send_size);
 		size_t send_size_b = send_size * sizeof(*bytecodes);
 		socket_send(&self->_client_socket, bytecodes, send_size_b);
 	}
 
 	socket_close_write_channel(&self->_client_socket);
-}
-
-static void server_nto_bufl(int* data, int data_size) {
-	for (int i = 0; i < data_size; ++i) {
-		data[i] = ntohl(data[i]);
-	}
 }
 
 void client_receive_variable_dump(client_t* self) {
@@ -81,7 +69,7 @@ void client_receive_variable_dump(client_t* self) {
 
 	socket_receive(&self->_client_socket, variables, recv_size_b);
 
-	server_nto_bufl(variables, self->_num_variables);
+	buffer_ntohl(variables, self->_num_variables);
 
 	printf("%s\n", "Variables dump");
 	for (int i = 0; i < self->_num_variables; ++i) {

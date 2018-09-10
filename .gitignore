@@ -4,12 +4,14 @@ notas-tp1.txt
 input
 tp
 src/tp
+test.sh
 
 # Directories that won't be included
 test/
 informe/
 entregas/
 inputs/
+local_output/
 
 # Directories that could be included
 linter/

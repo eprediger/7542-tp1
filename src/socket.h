@@ -26,8 +26,9 @@ void socket_bind(socket_t* self);
 // POST: socket escuchando conexiones entrantes en el puerto "service"
 void socket_listen(socket_t* self, int max_request);
 
-// PRE:  socket escuchando un puerto mediante socket_listen
-// POST: socket acepta una conexión entrante, luego se cierra
+// PRE:  self escuchando un puerto mediante socket_listen
+// POST: self acepta una conexión entrante, luego se cierra. 
+// Utilizar client_socket para recepcion/envio de informacion
 void socket_accept(socket_t* self, socket_t* client_socket);
 
 // PRE:  socket inicializado mediante socket_init
@@ -37,11 +38,11 @@ int socket_connect(socket_t* self);
 
 // PRE:  socket_connect (cliente) o socket_accept (servidor)
 // POST: envia a través de self size bytes el contenido de buf
-int socket_send(socket_t* self, const int* buf, const size_t size);
+size_t socket_send(socket_t* self, const int* buf, const size_t size);
 
 // PRE:  socket_connect (cliente) o socket_accept (servidor)
 // POST: recibe a través de self size bytes que alojaran en buf
-int socket_receive(socket_t* self, int* buf, size_t size);
+size_t socket_receive(socket_t* self, int* buf, size_t size);
 
 // PRE:  socket inicializado mediante socket_init
 // POST: cierra el canal de escritura de self

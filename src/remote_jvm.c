@@ -22,6 +22,7 @@ int main(int argc, const char *argv[]) {
 				// argv[2] = <port>
 				server_init(&servidor, argv[2]);
 				server_start(&servidor);
+				server_print_variables_dump(&servidor);
 				server_send_variables_dump(&servidor);
 				server_stop(&servidor);
 				server_destroy(&servidor);

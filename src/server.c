@@ -2,6 +2,7 @@
 
 #include "server.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -33,23 +34,22 @@
 
 void server_init(server_t* self, const char* service) {
 	int init_error = 0;
-	socket_init(&self->_local_socket, NULL, service, AI_PASSIVE);
-	buffer_init(&self->_buffer);
+	init_error = socket_init(&self->_local_socket, NULL, service, AI_PASSIVE);
 	if (init_error != 0) {
-		
+		fprintf(stderr, "%s\n", "server error");
+		exit(EXIT_FAILURE);
 	}
+	buffer_init(&self->_buffer);
+
+	socket_bind(&self->_local_socket);
+	socket_listen(&self->_local_socket, MAX_LISTEN);
+	socket_accept(&self->_local_socket, &self->_remote_socket);
 }
 
 void server_destroy(server_t* self) {
 	socket_destroy(&(self->_local_socket));
 	vmachine_destroy(&(self->_virtual_machine));
 	buffer_destroy(&(self->_buffer));
-}
-
-static void server_nto_bufl(int* data, int data_size) {
-	for (int i = 0; i < data_size; ++i) {
-		data[i] = ntohl(data[i]);
-	}
 }
 
 static void run_vm_instructions(vmachine_t* vm, int* bytecodes, int size) {
@@ -106,22 +106,8 @@ static void run_vm_instructions(vmachine_t* vm, int* bytecodes, int size) {
 	}
 }
 
-void server_print_variables_dump(server_t* self) {
-	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
-	size_t array_size = vars_get_array_size(variables_dump);
-
-	printf("\n%s\n", "Variables dump");
-	for (int i = 0; i < array_size; ++i) {
-		printf("%08x\n", vars_get_variable_by_index(variables_dump, i));
-	}
-}
-
 int server_start(server_t* self) {
 	bool running = true;
-	
-	socket_bind(&self->_local_socket);
-	socket_listen(&self->_local_socket, MAX_LISTEN);
-	socket_accept(&self->_local_socket, &self->_remote_socket);
 
 	//	Recibo numero de variables, se lanza VM
 	int vm_vars = 0;
@@ -139,24 +125,27 @@ int server_start(server_t* self) {
 		int received = 0;
 		buffer_reset(&self->_buffer);
 
-		received = socket_receive(&self->_remote_socket, buf_recv, max_recv_b);
+		received = socket_receive(&self->_remote_socket, buf_recv, max_recv_b-4);
 
 		running = (received > 0);
 		
 		if (running) {
 			int total_instr = received/sizeof(*buf_recv);
-			server_nto_bufl(buf_recv, total_instr);
+			buffer_ntohl(buf_recv, total_instr);
 			run_vm_instructions(&self->_virtual_machine, buf_recv, total_instr);
 		}
 	}
-	server_print_variables_dump(self);
 
 	return 0;
 }
 
-static void server_buf_tonl(int* data, int data_size) {
-	for (int i = 0; i < data_size; ++i) {
-		data[i] = htonl(data[i]);
+void server_print_variables_dump(server_t* self) {
+	var_array_t* variables_dump = vmachine_get_vars(&self->_virtual_machine);
+	size_t array_size = vars_get_array_size(variables_dump);
+
+	printf("\n%s\n", "Variables dump");
+	for (int i = 0; i < array_size; ++i) {
+		printf("%08x\n", vars_get_variable_by_index(variables_dump, i));
 	}
 }
 
@@ -168,7 +157,7 @@ void server_send_variables_dump(server_t* self) {
 	
 	size_t send_size_b = sizeof(*vars) * vars_size;
 	
-	server_buf_tonl(vars, vars_size);
+	buffer_htonl(vars, vars_size);
 	
 	socket_send(&self->_remote_socket, &vars[0], send_size_b);
 }
