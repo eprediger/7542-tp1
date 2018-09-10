@@ -32,6 +32,8 @@
 
 #define MAX_LISTEN 1
 
+#define MAX_BUFFER 100
+
 void server_init(server_t* self, const char* service) {
 	int init_error = 0;
 	init_error = socket_init(&self->_local_socket, NULL, service, AI_PASSIVE);
@@ -115,25 +117,24 @@ int server_start(server_t* self) {
 	vm_vars = ntohl(vm_vars);
 	vmachine_init(&self->_virtual_machine, vm_vars);
 
-	int* buf_recv;
-	size_t max_recv = buffer_get_max_size(&self->_buffer);
-	size_t max_recv_b = sizeof(*buf_recv) * max_recv;
-	buf_recv = buffer_get_transformed_data(&self->_buffer);
-	
+	int buf_recv[MAX_BUFFER];
+	memset(buf_recv, 0, MAX_BUFFER);
+
+	size_t max_recv_b = sizeof(*buf_recv) * MAX_BUFFER;
 	//	Recibo bytecodes
 	while (running) {
 		int received = 0;
-		buffer_reset(&self->_buffer);
 
-		received = socket_receive(&self->_remote_socket, buf_recv, max_recv_b-4);
+		received = socket_receive(&self->_remote_socket, &buf_recv[0], max_recv_b);
 
 		running = (received > 0);
 		
 		if (running) {
-			int total_instr = received/sizeof(*buf_recv);
-			buffer_ntohl(buf_recv, total_instr);
-			run_vm_instructions(&self->_virtual_machine, buf_recv, total_instr);
+			int total_instr = received/sizeof(buf_recv[0]);
+			buffer_ntohl(&buf_recv[0], total_instr);
+			run_vm_instructions(&self->_virtual_machine, &buf_recv[0], total_instr);
 		}
+		memset(buf_recv, 0, MAX_BUFFER);
 	}
 
 	return 0;

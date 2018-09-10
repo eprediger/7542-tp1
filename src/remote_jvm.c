@@ -16,7 +16,7 @@ int main(int argc, const char *argv[]) {
 		const char* nombre_serv = "server";
 		const char* nombre_cli  = "client";
 
-		if (strncmp(argv[1], nombre_serv, strlen(argv[1])) == 0) {
+		if (strcmp(argv[1], nombre_serv) == 0) {
 			if (argc == SERVER_ARGS) {
 				server_t servidor;
 				// argv[2] = <port>
@@ -30,7 +30,7 @@ int main(int argc, const char *argv[]) {
 				fprintf(stderr, "Usage: %s %s <port>\n", argv[0], argv[1]);
 				exit(EXIT_FAILURE);
 			}
-		} else if (strncmp(argv[1], nombre_cli, strlen(argv[1])) == 0) {
+		} else if (strcmp(argv[1], nombre_cli) == 0) {
 			if ((argc == CLIENT_MIN_ARGS) || (argc == CLIENT_MAX_ARGS)) {
 				client_t cliente;
 				const int num_variables = atoi(argv[4]);

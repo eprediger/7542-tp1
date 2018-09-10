@@ -34,7 +34,8 @@ void client_connect(client_t* self, const char* host, const char* service) {
 	}
 
 	if (socket_connect(&self->_client_socket) == -1) {
-		client_destroy(self);
+		// client_destroy(self);
+		parser_destroy(&self->_parser);
 		exit(EXIT_FAILURE);
 	}
 }

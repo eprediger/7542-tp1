@@ -6,7 +6,7 @@
 
 #include <arpa/inet.h>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 100
 
 #define IAND	0x7E
 #define IOR		0x80
