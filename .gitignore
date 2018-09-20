@@ -18,8 +18,6 @@ linter/
 valgrind/
 test/
 
-# Files that could be included
-Makefile
 
 # Prerequisites
 *.d

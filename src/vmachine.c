@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void vmachine_init(vmachine_t* self, int variables) {
+void vmachine_init(vmachine_t* self, size_t variables) {
 	stack_init(&self->_stack);
 	vars_init(&self->_variables, variables);
 }

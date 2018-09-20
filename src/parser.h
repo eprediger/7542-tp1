@@ -20,7 +20,7 @@ void parser_init(parser_t* self, const char* filepath);
 void parser_destroy(parser_t* self);
 
 // PRE:  parser inicializado mediante parser_init
-// POST: 
+// POST: indica si se ha alcanzado o no el final del archivo
 int parser_feof(parser_t* self);
 
 // PRE:  parser inicializado mediante parser_init

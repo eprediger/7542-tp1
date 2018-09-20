@@ -6,9 +6,9 @@
 #include "vars.h"
 
 typedef struct {
-	socket_t _client_socket;
-	parser_t _parser;
-	int _num_variables;
+	socket_t _client_socket;	// privado
+	parser_t _parser;	// privado
+	int _num_variables;	// privado
 } client_t;
 
 // PRE:  file debe ser una ruta a un archivo válida

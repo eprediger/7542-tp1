@@ -6,10 +6,10 @@
 #include "buffer.h"
 
 typedef struct {
-	socket_t _local_socket;
-	socket_t _remote_socket;
-	vmachine_t _virtual_machine;
-	buffer_t _buffer;
+	socket_t _local_socket;	// privado
+	socket_t _remote_socket;	// privado
+	vmachine_t _virtual_machine;	// privado
+	buffer_t _buffer;	// privado
 } server_t;
 
 // PRE:  -

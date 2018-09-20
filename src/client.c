@@ -15,14 +15,11 @@
 #define BASE10 10
 
 void client_init(client_t* self, const char* file, const int variables) {
-	// self->_client_socket = socket_init();
 	parser_init(&(self->_parser), file);
-	// buffer_init(&self->_buffer);
 	self->_num_variables = variables;
 }
 
 void client_destroy(client_t* self) {
-	// buffer_destroy(&self->_buffer);
 	parser_destroy(&self->_parser);
 	socket_destroy(&self->_client_socket);
 }
@@ -34,7 +31,6 @@ void client_connect(client_t* self, const char* host, const char* service) {
 	}
 
 	if (socket_connect(&self->_client_socket) == -1) {
-		// client_destroy(self);
 		parser_destroy(&self->_parser);
 		exit(EXIT_FAILURE);
 	}

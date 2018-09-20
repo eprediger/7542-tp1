@@ -12,7 +12,7 @@ typedef struct {
 // PRE:  -
 // POST: inicializa la instancia self de la maquina virtual, inicializando
 // su stack y el arreglo de variables con dimension "variables"
-void vmachine_init(vmachine_t* self, int variables);
+void vmachine_init(vmachine_t* self, size_t variables);
 
 // PRE:  self inicializado mediante vmachine_init
 // POST: los recursos de stack y array de la máquina virtual son
